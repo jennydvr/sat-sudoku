@@ -37,7 +37,7 @@ void createRowsFormula() {
 
 void createColumnsFormula() {
     // Fixed column number
-    for (int j = 1; j != 9; ++j) {
+    for (int j = 1; j != 10; ++j) {
         
         // Fixed number
         for (int d = 1; d != 10; ++d) {
