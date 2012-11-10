@@ -10,20 +10,21 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <cstdlib>
 
 using namespace std;
 
-template <class T>
-bool from_string(T& t,
-                 const std::string& s,
-                 std::ios_base& (*f)(std::ios_base&))
-{
-    istringstream iss(s);
-    return !(iss >> f >> t).fail();
-}
+// Line number - for the output file
+int ln = 0;
+
+// Output file
+ofstream outputfile;
+
+// Output string
+stringstream formula;
 
 int formulaToVariable(int i, int j, int d) {
-    return 81 * i + 9 * j + d - 72;
+    return (i - 1) * 81 + (j - 1) * 9 + d;
 }
 
 void createCellsFormula() {
@@ -35,39 +36,68 @@ void createRowsFormula() {
 }
 
 void createColumnsFormula() {
-    
+    // Fixed column number
+    for (int j = 1; j != 9; ++j) {
+        
+        // Fixed number
+        for (int d = 1; d != 10; ++d) {
+            
+            // !Pijd v !Pkjd  -  just variate the row
+            for (int i = 1; i != 10; ++i)
+                for (int k = i + 1; k < 10; ++k)
+                    formula << ++ln
+                            << " -" << formulaToVariable(i, j, d)
+                            << " -" << formulaToVariable(k, j, d)
+                            << " 0\n";
+        }
+    }
 }
 
 void createSubtFormula() {
     
 }
 
-void createFileFormula(string filename) {
-    ifstream file(filename);
+void createFileFormula(const char *filename) {
+    ifstream inputfile(filename);
     
-    if (!file.is_open()) {
+    if (!inputfile.is_open()) {
         cout << "Error: El archivo no existe.\n";
         exit(0);
     }
     
-    while (file.good()) {
+    for (int i = 0; i != 9; ++i) {
         string line;
-        getline(file, line);
+        getline(inputfile, line);
         
-        // Formula aca
+        for (int j = 0; j != 9; ++j) {
+            int d = line[j] - 48;   // ascii(1) = 49
+            
+            if (1 <= d && d <= 9)
+                formula << ++ln << " " << formulaToVariable(i + 1, j + 1, d) << " 0\n";
+        }
     }
     
-    file.close();
+    inputfile.close();
 }
 
 int main(int argc, const char *argv[]) {
-    
     if (argc != 2) {
         cout << "Error: Diga un nombre de archivo.\n";
         return 0;
     }
     
+    // Start writing the formula
     createFileFormula(argv[1]);
+    createCellsFormula();
+    createRowsFormula();
+    createColumnsFormula();
+    createSubtFormula();
+    
+    // Write in a file
+    outputfile.open("example.txt");
+    outputfile << "p cnf 729 " << ln << endl;
+    outputfile << formula.str() << endl;
+    outputfile.close();
     
     return 0;
 }
