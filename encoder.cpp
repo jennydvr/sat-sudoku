@@ -1,5 +1,5 @@
 //
-//  main.cpp
+//  encoder.cpp
 //  sat-solver
 //
 //  Created by Jenny Valdez on 10/11/12.
@@ -17,12 +17,8 @@ using namespace std;
 // Line number - for the output file
 int ln = 0;
 
-// Output file
-ofstream outputfile;
-
 // Output string
 stringstream formula;
-
 
 int formulaToVariable(int i, int j, int d) {
     return (i - 1) * 81 + (j - 1) * 9 + d;
@@ -31,34 +27,30 @@ int formulaToVariable(int i, int j, int d) {
 void createCellsFormula() {
     
 }
-/* Different cell values for
-   cells belonging to same row.
-*/
+
 void createRowsFormula() {
     // Fixed row number
-for (int i = 1; i < 10; ++i){
-      // Fixed cell value
- for (int d = 1; d < 10; ++d){
-	// !Pijd v !Pikd
-  	 for (int j = 1; j < 10; ++j){
-		for (int k = j+1; k <10; ++k){
-	            formula << ++ln
-                    << " -" << formulaToVariable(i, j, d)
-                    << " -" << formulaToVariable(i, k, d)
-                    << " 0\n";
-		}
-	  }
-  }
-}
+    for (int i = 1; i < 10; ++i) {
+        // Fixed cell value
+        for (int d = 1; d < 10; ++d) {
+            // !Pijd v !Pikd
+            for (int j = 1; j < 10; ++j) {
+                for (int k = j+1; k < 10; ++k) {
+                    formula << ++ln
+                            << " -" << formulaToVariable(i, j, d)
+                            << " -" << formulaToVariable(i, k, d)
+                            << " 0\n";
+                }
+            }
+        }
+    }
 }
 
 void createColumnsFormula() {
     // Fixed column number
     for (int j = 1; j != 10; ++j) {
-        
         // Fixed number
         for (int d = 1; d != 10; ++d) {
-            
             // !Pijd v !Pkjd  -  just variate the row
             for (int i = 1; i != 10; ++i)
                 for (int k = i + 1; k < 10; ++k)
@@ -111,7 +103,7 @@ int main(int argc, const char *argv[]) {
     createSubtFormula();
     
     // Write in a file
-    outputfile.open("example.txt");
+    ofstream outputfile("example.txt");
     outputfile << "p cnf 729 " << ln << endl;
     outputfile << formula.str() << endl;
     outputfile.close();
