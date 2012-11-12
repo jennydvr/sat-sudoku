@@ -37,10 +37,10 @@ void createRowsFormula() {
             for (int j = 1; j < 10; ++j) {
                 for (int k = j+1; k < 10; ++k) {
                     formula 
-                                //<< ++ln //No hay que imprimir el numero de linea
                             << " -" << formulaToVariable(i, j, d)
                             << " -" << formulaToVariable(i, k, d)
                             << " 0\n";
+			 ++ln;
                 }
             }
         }
@@ -54,17 +54,19 @@ void createColumnsFormula() {
         for (int d = 1; d != 10; ++d) {
             // !Pijd v !Pkjd  -  just variate the row
             for (int i = 1; i != 10; ++i)
-                for (int k = i + 1; k < 10; ++k)
+                for (int k = i + 1; k < 10; ++k){
                     formula 
-                                //<< ++ln
+                            
                             << " -" << formulaToVariable(i, j, d)
                             << " -" << formulaToVariable(k, j, d)
                             << " 0\n";
+ 			++ln;
+		}
         }
     }
 }
 
-void wawa(int tabRow, int tabCol)
+void subTabAux(int tabRow, int tabCol)
 {
     for (int i = tabRow; i < tabRow + 3; i++)
     {
@@ -83,10 +85,11 @@ void wawa(int tabRow, int tabCol)
                     for (int d = 1; d < 10; d++)
                     {                    
                         formula 
-                                //<< ++ln  //No hay que imprimir el numero de linea                   
+                                           
                                 << " -" << formulaToVariable(i, j, d)
                                 << " -" << formulaToVariable(x, y, d)
                                 << " 0\n";
+				++ln;       
                         //cout << "P(i = " << i << ", j = " << j << ", d = " << d << ")    |   P(x = " << x << ", y = " << y << ", d = " << d << ")" <<  endl;
                     }
                 }
@@ -100,7 +103,7 @@ void createSubtFormula() {
     {        
         for (int j = 1; j < 10; j+=3)
         {
-            wawa(i, j);
+            subTabAux(i, j);
         }
     }
     return;
@@ -113,30 +116,31 @@ void createFileFormula(string line) {
         cout << "Error: El archivo no existe.\n";
         exit(0);
     }*/
-    
-    for (int x = 0; x != '\0'; ++x) {
-        //string line;
-        //getline(inputfile, line);        
+   /* 
+    for (int x = 0; x != '\0'; ++x) { 
         
         int i = (x+1) / 9;
         int j = (x+1) % 9; 
         
-        //for (int j = 0; j != 9; ++j) {
+        for (int j = 0; j != 9; ++j) {
             if (line[x] == '\n')
-                continue;
+                break;
             
             int d = line[x] - 48;   // ascii(1) = 49
             
-            if (1 <= d && d <= 9)
+            if (1 <= d && d <= 9){
                 formula 
-                                //<< ++ln //No hay que imprimir el numero de linea
                     << " " << formulaToVariable(i + 1, j + 1, d) << " 0\n";
-        //}
+		++ln;
+	     }
+        }
     }
+*/
+
     //inputfile.close();
 }
 
-void core(string s, int fileNum)
+void writeFile(string s, int fileNum)
 {
     ln = 0;
     formula.str("");
@@ -153,7 +157,7 @@ void core(string s, int fileNum)
 
     // Write in a file
     stringstream ss;
-    ss << "example" << fileNum << ".txt";
+    ss << "example" << fileNum << ".cnf";
     string sss = ss.str();
 
     ofstream outputfile((char*)sss.c_str()) ; //(sss);
@@ -173,9 +177,9 @@ void readInputFile(const char *filename)
         exit(0);
     }
 
-    stringstream zombie;
+    stringstream fileString;
 
-    //memset(zombie, '\0', sizeof(zombie));
+    //memset(fileString, '\0', sizeof(fileString));
     int index = 0; 
 
     while (!inputfile.eof())
@@ -189,23 +193,24 @@ void readInputFile(const char *filename)
         if (line.empty())
             break;
 
-        core(line, index);
+        writeFile(line, index);
         index++;
         continue;
 
         for (int j = 0; j != 81; ++j) {
             //int d = line[j] - 48;   // ascii(1) = 49            
 
-            zombie << line[j];
+            fileString << line[j];
             if ((j+1) % 9 == 0)
-                zombie << endl;
+                fileString << endl;
         }   
-        //core(zombie.str());
+        //core(fileString.str());
     }
     inputfile.close();
-    //cout << zombie.str() << endl;
-    //zombie << endl;
-    //cout << zombie.str() << endl;
+
+    //cout << fileString.str() << endl;
+    //fileString << endl;
+    //cout << fileString.str() << endl;
     
     /*
     for (int i = 0; i != 9; ++i) {
@@ -234,20 +239,4 @@ int main(int argc, const char *argv[]) {
     readInputFile(argv[1]);
     return 0;   
 
-    // Start writing the formula
-    createFileFormula(argv[1]);
-    createCellsFormula();
-    createRowsFormula();
-    createColumnsFormula();
-    createSubtFormula();
-    
-
-
-    // Write in a file
-    ofstream outputfile("example.txt");
-    outputfile << "p cnf 729 " << ln << endl;
-    outputfile << formula.str() << endl;
-    outputfile.close();
-    
-    return 0;
 }
