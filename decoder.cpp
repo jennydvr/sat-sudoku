@@ -23,7 +23,7 @@ struct Position {
     int cell;
 };
 
-Position invert(int position) {
+Position formulaToVariable(int position) {
     Position pos;
     pos.row = position / 81 + 1;
     pos.col = (position - position % 9 + 90 - 81 * (position / 81 + 1)) / 9;
@@ -44,19 +44,59 @@ int main(int argc, const char **argv) {
         cout << "Error: El archivo no existe.\n";
         return 1;
     }
-    
+   
     while (inputfile.good()) {
+ 
         string line;
         getline(inputfile, line);
-        
+         
         // Read SAT solver results.
-        if (line[0] == 's' && line.compare("SATISFIABLE") != 0) {
+	
+        if (line[1] == 's' && line.compare("SATISFIABLE") != 0) {
             cout << "El tablero no puede resolverse.\n";
             return 0;
         }
-        
-        
+	else if (line[0] == 's' && line.compare("SATISFIABLE") == 0)
+		 continue;
+	else if (line[0] == 'v'){  
+		
+	   string subline;
+		istringstream streamline(line);
+		while (getline(streamline, subline, ' ')){
+		string value;
+		istringstream lineString(subline);
+		getline(lineString, value, ' ');
+		if (value.compare("v") == 0)
+		  continue;
+		int variable = atoi(value.c_str());
+		
+		
+		Position pos = formulaToVariable(variable);
+		if (variable > 0){
+		//cout << "var - row - col - value " << variable << " " << pos.row << " " <<
+	//	pos.col << " " << pos.cell << endl;
+			board[pos.row-1][pos.col-1] = pos.cell;
+		}
+		}
+	}
+  
     }
-    
+cout << "----------------------" << endl;
+
+  for (int i = 0; i< 9 ; ++i){
+	if (i % 3 == 0 && i > 0){
+	  cout <<"---------------------|"<<  endl;
+	}
+	
+	for (int j = 0; j < 9; ++j){
+	if (j % 3 == 0){
+	  cout << "|";
+	}
+	  cout << board[i][j] << " ";
+	}
+cout << "|" << endl;
+
+    }
+cout << "----------------------" << endl;
     inputfile.close();
 }

@@ -154,10 +154,10 @@ void createFormula(string line) {
     
     // Create the formula
     createInstanceFormula(line);
-  //  createCellsFormula();
-  //  createRowsFormula();
-  //  createColumnsFormula();
-  //  createSubtFormula();
+    createCellsFormula();
+    createRowsFormula();
+    createColumnsFormula();
+    createSubtFormula();
     
     // Create the filename
     stringstream name;
