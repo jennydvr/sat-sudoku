@@ -1,4 +1,11 @@
 sat-sudoku
 ==========
+    Jenny Valdez
+    Grace Gimon
+    Christian Chomiak
 
-Sudoku solver
+INSTRUCCIONES
+    - Dar permisos de ejecucion a 'solver'
+    - Ejecutar ./solver <archivo>
+
+Nota: Ver el formato de los archivos de entrada.
