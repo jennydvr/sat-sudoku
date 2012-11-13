@@ -6,19 +6,43 @@
 #  Created by Jenny Valdez on 12/11/12.
 #  Copyright (c) 2012 Jenny Valdez. All rights reserved.
 
-file=$(basename "$1")
-filename="${file%.*}"
+die () {
+    echo >&2 "$@"
+    exit 1
+}
+
+[ "$#" -eq 1 ] || die "Error: 1 argumento requerido, $# dados."
+
+# Make picosat
+echo "Creando picosat..."
+cd picosat-953
+./configure && make
+cd ..
+
+# Make decoder and encoder
+echo "\nCreando encoder y decoder..."
+make
+
+echo "\nResolviendo sudokus..."
+
+input=$(basename "$1")
+filename="${input%.*}"
 
 # Check if there is no errors in the encoding
-if ./encoder $file
+if ./encoder $input
 then
+    output="$filename.out"
+    echo "" > $output
+
     for cnf in *.cnf
     do
         # Solve the file
         ans="${cnf%.*}.ans"
-        #./sat-solver $cnf > $ans
+        ./picosat-953/picosat $cnf > $ans
 
         # Decode the result
-        #./decoder $ans
+        ./decoder $ans >> $output
     done
+
+    echo "Listo! Revisa $output para ver los resultados."
 fi

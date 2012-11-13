@@ -12,6 +12,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
 
 using namespace std;
 
@@ -23,11 +24,11 @@ struct Position {
     int cell;
 };
 
-Position formulaToVariable(int position) {
+Position variableToFormula(int variable) {
     Position pos;
-    pos.row = position / 81 + 1;
-    pos.col = (position - position % 9 + 90 - 81 * (position / 81 + 1)) / 9;
-    pos.cell = position % 9;
+    pos.row = variable / 81 + 1;
+    pos.cell = variable % 9 == 0 ? 9 : variable % 9;
+    pos.col = (variable - pos.cell + 90 - 81 * pos.row) / 9;
     
     return pos;
 }
@@ -46,57 +47,52 @@ int main(int argc, const char **argv) {
     }
    
     while (inputfile.good()) {
- 
+        
         string line;
         getline(inputfile, line);
          
         // Read SAT solver results.
-	
-        if (line[1] == 's' && line.compare("SATISFIABLE") != 0) {
-            cout << "El tablero no puede resolverse.\n";
-            return 0;
+        if (line[0] == 's') {
+            if (line.compare("s UNSATISFIABLE") == 0) {
+                cout << "El tablero no puede resolverse.\n";
+                return 0;
+            }
+            continue;
         }
-	else if (line[0] == 's' && line.compare("SATISFIABLE") == 0)
-		 continue;
-	else if (line[0] == 'v'){  
-		
-	   string subline;
-		istringstream streamline(line);
-		while (getline(streamline, subline, ' ')){
-		string value;
-		istringstream lineString(subline);
-		getline(lineString, value, ' ');
-		if (value.compare("v") == 0)
-		  continue;
-		int variable = atoi(value.c_str());
-		
-		
-		Position pos = formulaToVariable(variable);
-		if (variable > 0){
-		//cout << "var - row - col - value " << variable << " " << pos.row << " " <<
-	//	pos.col << " " << pos.cell << endl;
-			board[pos.row-1][pos.col-1] = pos.cell;
+        
+        // If the line doesn't starts with 's', starts with 'v'
+        string subline;
+        istringstream streamline(line);
+        
+        while (getline(streamline, subline, ' ')) {
+            if (subline.compare("v") == 0)
+                continue;
+            
+            int variable = atoi(subline.c_str());
+            Position pos = variableToFormula(abs(variable));
+            
+            if (variable > 0)
+                board[pos.row - 1][pos.col - 1] = pos.cell;
 		}
-		}
-	}
-  
     }
-cout << "----------------------" << endl;
+    
+    // Print the solution
+    cout << "-------------------------" << endl;
 
-  for (int i = 0; i< 9 ; ++i){
-	if (i % 3 == 0 && i > 0){
-	  cout <<"---------------------|"<<  endl;
-	}
+    for (int i = 0; i< 9 ; ++i) {
+        if (i % 3 == 0 && i > 0) {
+            cout << "|-----------------------|" <<  endl;
+        }
 	
-	for (int j = 0; j < 9; ++j){
-	if (j % 3 == 0){
-	  cout << "|";
-	}
-	  cout << board[i][j] << " ";
-	}
-cout << "|" << endl;
+        for (int j = 0; j < 9; ++j) {
+            if (j % 3 == 0) {
+                cout << "| ";
+            }
+            cout << board[i][j] << " ";
+        }
+        cout << "|" << endl;
 
     }
-cout << "----------------------" << endl;
+    cout << "-------------------------" << endl;
     inputfile.close();
 }
