@@ -76,8 +76,8 @@ int main(int argc, const char **argv) {
 		}
     }
     
-    // Print the solution
-    cout << "-------------------------" << endl;
+    // Print the solution as table
+  /*  cout << "-------------------------" << endl;
 
     for (int i = 0; i< 9 ; ++i) {
         if (i % 3 == 0 && i > 0) {
@@ -94,5 +94,13 @@ int main(int argc, const char **argv) {
 
     }
     cout << "-------------------------" << endl;
+*/
+    //Print the solution as required output
+	for (int i = 0; i<9; ++i){
+		for (int j = 0; j < 9; ++j){
+		 cout<<board[i][j];
+		}
+	}
+	cout << endl;
     inputfile.close();
 }
