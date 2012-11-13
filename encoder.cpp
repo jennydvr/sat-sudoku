@@ -30,9 +30,38 @@ int formulaToVariable(int i, int j, int d) {
     return (i - 1) * 81 + (j - 1) * 9 + d;
 }
 
-void createCellsFormula() {
-    
+void createCellsFormulaAux(int tabRow, int tabCol)
+{
+    for (int i = tabRow; i < tabRow + 3; i++)
+    {
+        for (int j = tabCol; j < tabCol + 3; j++)
+        {
+            for (int d = 1; d < 10; d++)
+            {      
+                for (int e = d+1; e < 10; e++)
+                {                                   
+                    formula << "-" << formulaToVariable(i, j, d)
+                    << " -" << formulaToVariable(i, j, e)
+                    << " 0\n";
+                    ++ln;                   
+                    //cout << "!P(i = " << i << ", j = " << j << ", d = " << d << ")    |   !P(i = " << i << ", j = " << j << ", d = " << e << ")" <<  endl;
+                }
+            }
+        }
+    }
 }
+
+void createCellsFormula() {
+    for (int i = 1; i < 10; i+=3)
+    {        
+        for (int j = 1; j < 10; j+=3)
+        {
+            createCellsFormulaAux(i, j);
+        }
+    }
+}
+
+
 
 void createRowsFormula() {
     // Fixed row number
