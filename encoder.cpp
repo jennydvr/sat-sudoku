@@ -105,25 +105,17 @@ void createSubtFormula() {
 }
 
 void createInstanceFormula(string line) {
-    /*
-     for (int x = 0; x != '\0'; ++x) {
+     for (int x = 0; x != line.size(); ++x) {
      
-     int i = (x+1) / 9;
-     int j = (x+1) % 9;
-     
-     for (int j = 0; j != 9; ++j) {
-     if (line[x] == '\n')
-     break;
-     
-     int d = line[x] - 48;   // ascii(1) = 49
-     
-     if (1 <= d && d <= 9){
-     formula << formulaToVariable(i + 1, j + 1, d) << " 0\n";
-     ++ln;
+         int i = x / 9 + 1;
+         int j = (x + 9) % 9 + 1;
+         int d = line[x] - 48;   // ascii(1) = 49
+         
+         if (1 <= d && d <= 9) {
+             formula << formulaToVariable(i, j, d) << " 0\n";
+             ++ln;
+         }
      }
-     }
-     }
-     */
 }
 
 void createFormula(string line) {
@@ -133,10 +125,10 @@ void createFormula(string line) {
     
     // Create the formula
     createInstanceFormula(line);
-    createCellsFormula();
-    createRowsFormula();
-    createColumnsFormula();
-    createSubtFormula();
+  //  createCellsFormula();
+  //  createRowsFormula();
+  //  createColumnsFormula();
+  //  createSubtFormula();
     
     // Create the filename
     stringstream name;
