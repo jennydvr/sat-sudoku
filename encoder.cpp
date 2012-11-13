@@ -20,6 +20,12 @@ int ln = 0;
 // Output string
 stringstream formula;
 
+// Current solved-instance
+int current = 0;
+
+// Name of file being solved
+string filename;
+
 int formulaToVariable(int i, int j, int d) {
     return (i - 1) * 81 + (j - 1) * 9 + d;
 }
@@ -36,11 +42,10 @@ void createRowsFormula() {
             // !Pijd v !Pikd
             for (int j = 1; j < 10; ++j) {
                 for (int k = j+1; k < 10; ++k) {
-                    formula 
-                            << " -" << formulaToVariable(i, j, d)
-                            << " -" << formulaToVariable(i, k, d)
-                            << " 0\n";
-			 ++ln;
+                    formula << "-" << formulaToVariable(i, j, d)
+                    << " -" << formulaToVariable(i, k, d)
+                    << " 0\n";
+                    ++ln;
                 }
             }
         }
@@ -54,43 +59,38 @@ void createColumnsFormula() {
         for (int d = 1; d != 10; ++d) {
             // !Pijd v !Pkjd  -  just variate the row
             for (int i = 1; i != 10; ++i)
-                for (int k = i + 1; k < 10; ++k){
-                    formula 
-                            
-                            << " -" << formulaToVariable(i, j, d)
-                            << " -" << formulaToVariable(k, j, d)
-                            << " 0\n";
- 			++ln;
-		}
+                for (int k = i + 1; k < 10; ++k) {
+                    formula << "-" << formulaToVariable(i, j, d)
+                    << " -" << formulaToVariable(k, j, d)
+                    << " 0\n";
+                    ++ln;
+                }
         }
     }
 }
 
 void subTabAux(int tabRow, int tabCol)
 {
-    for (int i = tabRow; i < tabRow + 3; i++)
+    for (int i = tabRow; i < tabRow + 3; ++i)
     {
-        for (int j = tabCol; j < tabCol + 3; j++)
+        for (int j = tabCol; j < tabCol + 3; ++j)
         {
-            for (int x = tabRow; x < tabRow + 3; x++)
+            for (int x = tabRow; x < tabRow + 3; ++x)
             {
                 if (i > x)
                     continue;
                 
-                for (int y = tabCol; y < tabCol + 3; y++)
+                for (int y = tabCol; y < tabCol + 3; ++y)
                 {
                     if ((j > y) || (i == x && j == y))
                         continue;
-
-                    for (int d = 1; d < 10; d++)
-                    {                    
-                        formula 
-                                           
-                                << " -" << formulaToVariable(i, j, d)
-                                << " -" << formulaToVariable(x, y, d)
-                                << " 0\n";
-				++ln;       
-                        //cout << "P(i = " << i << ", j = " << j << ", d = " << d << ")    |   P(x = " << x << ", y = " << y << ", d = " << d << ")" <<  endl;
+                    
+                    for (int d = 1; d < 10; ++d)
+                    {
+                        formula << "-" << formulaToVariable(i, j, d)
+                        << " -" << formulaToVariable(x, y, d)
+                        << " 0\n";
+                        ++ln;
                     }
                 }
             }
@@ -99,144 +99,92 @@ void subTabAux(int tabRow, int tabCol)
 }
 
 void createSubtFormula() {
-    for (int i = 1; i < 10; i+=3)
-    {        
-        for (int j = 1; j < 10; j+=3)
-        {
+    for (int i = 1; i < 10; i += 3)
+        for (int j = 1; j < 10; j += 3)
             subTabAux(i, j);
-        }
-    }
-    return;
 }
 
-void createFileFormula(string line) {
-    //ifstream inputfile(filename);
-    
-    /*if (!inputfile.is_open()) {
-        cout << "Error: El archivo no existe.\n";
-        exit(0);
-    }*/
-   /* 
-    for (int x = 0; x != '\0'; ++x) { 
-        
-        int i = (x+1) / 9;
-        int j = (x+1) % 9; 
-        
-        for (int j = 0; j != 9; ++j) {
-            if (line[x] == '\n')
-                break;
-            
-            int d = line[x] - 48;   // ascii(1) = 49
-            
-            if (1 <= d && d <= 9){
-                formula 
-                    << " " << formulaToVariable(i + 1, j + 1, d) << " 0\n";
-		++ln;
-	     }
-        }
-    }
-*/
-
-    //inputfile.close();
+void createInstanceFormula(string line) {
+    /*
+     for (int x = 0; x != '\0'; ++x) {
+     
+     int i = (x+1) / 9;
+     int j = (x+1) % 9;
+     
+     for (int j = 0; j != 9; ++j) {
+     if (line[x] == '\n')
+     break;
+     
+     int d = line[x] - 48;   // ascii(1) = 49
+     
+     if (1 <= d && d <= 9){
+     formula << formulaToVariable(i + 1, j + 1, d) << " 0\n";
+     ++ln;
+     }
+     }
+     }
+     */
 }
 
-void writeFile(string s, int fileNum)
-{
+void createFormula(string line) {
+    // Clear variables
     ln = 0;
     formula.str("");
-
-    // Start writing the formula
-    cout << s.length() << endl;
-
-    createFileFormula(s);
+    
+    // Create the formula
+    createInstanceFormula(line);
     createCellsFormula();
     createRowsFormula();
     createColumnsFormula();
-    createSubtFormula();    
-
-
-    // Write in a file
-    stringstream ss;
-    ss << "example" << fileNum << ".cnf";
-    string sss = ss.str();
-
-    ofstream outputfile((char*)sss.c_str()) ; //(sss);
+    createSubtFormula();
+    
+    // Create the filename
+    stringstream name;
+    name << filename << current << ".cnf";
+    
+    // Write all
+    ofstream outputfile(name.str());
     outputfile << "p cnf 729 " << ln << endl;
     outputfile << formula.str() << endl;
     outputfile.close();
 }
 
-
-
-void readInputFile(const char *filename)
-{
-    ifstream inputfile(filename);
+void readInputFile(const char *completeFilename) {
+    ifstream inputfile(completeFilename);
     
     if (!inputfile.is_open()) {
         cout << "Error: El archivo no existe.\n";
-        exit(0);
+        exit(1);
     }
-
-    stringstream fileString;
-
-    //memset(fileString, '\0', sizeof(fileString));
-    int index = 0; 
-
-    while (!inputfile.eof())
-    {
-        string line;
-
-        //getline(inputfile, line);
-
-        inputfile >> line;
-
-        if (line.empty())
-            break;
-
-        writeFile(line, index);
-        index++;
-        continue;
-
-        for (int j = 0; j != 81; ++j) {
-            //int d = line[j] - 48;   // ascii(1) = 49            
-
-            fileString << line[j];
-            if ((j+1) % 9 == 0)
-                fileString << endl;
-        }   
-        //core(fileString.str());
-    }
-    inputfile.close();
-
-    //cout << fileString.str() << endl;
-    //fileString << endl;
-    //cout << fileString.str() << endl;
     
-    /*
-    for (int i = 0; i != 9; ++i) {
+    while (!inputfile.eof()) {
         string line;
         getline(inputfile, line);
         
-        for (int j = 0; j != 9; ++j) {
-            int d = line[j] - 48;   // ascii(1) = 49
-            
-            if (1 <= d && d <= 9)
-                formula 
-                                //<< ++ln //No hay que imprimir el numero de linea
-                    << " " << formulaToVariable(i + 1, j + 1, d) << " 0\n";
-        }
-    }*/
+        if (line.empty())
+            break;
+        
+        // Encode this instance
+        createFormula(line);
+        ++current;
+    }
     
-    
+    inputfile.close();
 }
 
 int main(int argc, const char *argv[]) {
     if (argc != 2) {
         cout << "Error: Diga un nombre de archivo.\n";
-        return 0;
+        return 1;
     }
-
+    
+    // Extract the name of the file
+    filename = argv[1];
+    int pos = (int) filename.find(".");
+    filename = filename.substr(0, pos);
+    
+    // Read every instance
     readInputFile(argv[1]);
-    return 0;   
-
+    
+    return 0;
 }

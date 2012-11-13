@@ -11,6 +11,7 @@
 #include <sstream>
 #include <fstream>
 #include <cstdlib>
+#include <cstring>
 
 using namespace std;
 
@@ -31,17 +32,17 @@ Position invert(int position) {
     return pos;
 }
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char **argv) {
     if (argc != 2) {
         cout << "Error: Diga un nombre de archivo.\n";
-        return 0;
+        return 1;
     }
     
     ifstream inputfile(argv[1]);
     
     if (!inputfile.is_open()) {
         cout << "Error: El archivo no existe.\n";
-        return 0;
+        return 1;
     }
     
     while (inputfile.good()) {
@@ -49,6 +50,11 @@ int main(int argc, const char *argv[]) {
         getline(inputfile, line);
         
         // Read SAT solver results.
+        if (line[0] == 's' && line.compare("SATISFIABLE") != 0) {
+            cout << "El tablero no puede resolverse.\n";
+            return 0;
+        }
+        
         
     }
     

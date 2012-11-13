@@ -1,0 +1,22 @@
+#!/bin/sh
+
+#  solver
+#  sat-solver
+#
+#  Created by Jenny Valdez on 12/11/12.
+#  Copyright (c) 2012 Jenny Valdez. All rights reserved.
+
+file=$(basename "$1")
+filename="${file%.*}"
+
+# Check if there is no errors in the encoding
+if ./encoder $file
+then
+    # Solve the file
+    cnf="$filename.cnf"
+    #./sat-solver $cnf > $ans
+
+    # Decode the result
+    ans="$filename.ans"
+    #./decoder $ans
+fi
