@@ -12,11 +12,13 @@ filename="${file%.*}"
 # Check if there is no errors in the encoding
 if ./encoder $file
 then
-    # Solve the file
-    cnf="$filename.cnf"
-    #./sat-solver $cnf > $ans
+    for cnf in *.cnf
+    do
+        # Solve the file
+        ans="${cnf%.*}.ans"
+        #./sat-solver $cnf > $ans
 
-    # Decode the result
-    ans="$filename.ans"
-    #./decoder $ans
+        # Decode the result
+        #./decoder $ans
+    done
 fi
