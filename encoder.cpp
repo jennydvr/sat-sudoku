@@ -92,12 +92,11 @@ void subTabAux(int tabRow, int tabCol)
         {
             for (int x = tabRow; x < tabRow + 3; ++x)
             {
-                if (i > x)
-                    continue;
+              
                 
                 for (int y = tabCol; y < tabCol + 3; ++y)
                 {
-                    if ((j > y) || (i == x && j == y))
+                    if (i == x && j == y)
                         continue;
                     
                     for (int d = 1; d < 10; ++d)
