@@ -91,9 +91,7 @@ void subTabAux(int tabRow, int tabCol)
         for (int j = tabCol; j < tabCol + 3; ++j)
         {
             for (int x = tabRow; x < tabRow + 3; ++x)
-            {
-              
-                
+            {           
                 for (int y = tabCol; y < tabCol + 3; ++y)
                 {
                     if (i == x && j == y)

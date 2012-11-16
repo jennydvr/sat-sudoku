@@ -5,8 +5,8 @@ build-exec = $(CXX) $(CXXFLAGS) -o $@ $^
 
 .PHONY: all clean
 
-all: encoder decoder
-clean: ; rm -f *.cnf ./*.o ./*.gch encoder decoder
+all: encoder decoder checker
+clean: ; rm -f *.cnf *.ans *.out ./*.o ./*.gch encoder decoder checker
 
 %.o: %.cpp ; $(CXX) $(CXXFLAGS) -c $<
 
@@ -18,3 +18,6 @@ decoder: decoder.o ;  $(build-exec)
 
 decoder.o: decoder.cpp
 
+checker: checker.o ; $(build-exec)
+
+checker.o: checker.cpp

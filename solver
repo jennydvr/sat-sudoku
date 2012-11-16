@@ -44,5 +44,8 @@ then
         ./decoder $ans >> $output
     done
 
-    echo "Listo! Revisa $output para ver los resultados."
+    #echo "Listo! Revisa $output para ver los resultados."
+
+    echo "\nRevisando integridad de los resultados del archivo <$output>..."
+    ./checker $output
 fi
