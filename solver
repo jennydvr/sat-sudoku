@@ -29,6 +29,9 @@ input=$(basename "$1")
 filename="${input%.*}"
 
 # Check if there is no errors in the encoding
+t="$(date +%s.%N)"
+count=0
+
 if ./encoder $input
 then
     output="$filename.out"
@@ -42,10 +45,19 @@ then
 
         # Decode the result
         ./decoder $ans >> $output
+        count=$(($count + 1))
     done
 
-    #echo "Listo! Revisa $output para ver los resultados."
+    # Execution time
+    t="$(($(date +%s.%N)-t))"
+    diff=$(echo "scale=5; $t / 1000000000" | bc)
+    prom=$(echo "scale=5; $diff / $count" | bc)
 
-    echo "\nRevisando integridad de los resultados del archivo <$output>..."
-    ./checker $output
+    # Remove unnecessary files
+    rm *.cnf *.ans
+
+    echo "Listo! Revisa $output para ver los resultados."
+    echo "Tiempo de ejecucion total: $diff"
+    echo "Tiempo de ejecucion promedio: $prom"
+
 fi
